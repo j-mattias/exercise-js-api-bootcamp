@@ -51,3 +51,29 @@ attending: true
 ```
 
 3. Render only the ones that are attending and have some allergy to the DOM.
+
+## Exercise 5
+
+* Build an online library page using the API from exercise 3.
+* Use one or several of the following APIs to develop your own project:
+  ```
+  https://santosnr6.github.io/Data/childrens_books.json
+  ```
+
+  ```
+  https://santosnr6.github.io/Data/airbeanproducts.json
+  ```
+
+  ```
+  https://santosnr6.github.io/Data/movies_long.json
+  ```
+
+  ```
+  https://santosnr6.github.io/Data/sinus_products.json
+  ```
+
+  ```
+  https://santosnr6.github.io/Data/pokemons.json
+  ```
+
+  
