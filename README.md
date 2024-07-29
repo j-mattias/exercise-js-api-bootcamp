@@ -52,7 +52,7 @@ attending: true
 
 3. Render only the ones that are attending and have some allergy to the DOM.
 
-## Exercise 5
+## Exercise 5 - suggestions / resources
 
 * Build an online library page using the API from exercise 3.
 * Use one or several of the following APIs to develop your own project:
