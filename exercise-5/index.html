@@ -7,14 +7,25 @@
     <title>Library</title>
   </head>
   <body>
+    <nav class="navbar">
+      <ul class="navbar_links">
+        <li class="borrow">Borrow</li>
+        <li class="return">Return</li>
+      </ul>
+    </nav>
+
     <h1>Library</h1>
 
-    <h2>Available books</h2>
-    <section class="available-books"></section>
+    <div class="section-wrapper available">
+      <h2>Available books</h2>
+      <section class="available-books"></section>
+    </div>
 
-    <h2>Borrowed books</h2>
-    <section class="borrowed-books"></section>
-    
+    <div class="section-wrapper borrowed hidden">
+      <h2>Borrowed books</h2>
+      <section class="borrowed-books"></section>
+    </div>
+
     <script src="script.js"></script>
   </body>
 </html>

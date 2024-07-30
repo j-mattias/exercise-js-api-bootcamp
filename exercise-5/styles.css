@@ -5,7 +5,7 @@
 }
 
 body {
-  background: linear-gradient(rgb(255, 219, 171), rgb(240, 227, 223));
+  background: linear-gradient(#ffdbab, #f0e3df);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   min-height: 100vh;
   display: flex;
@@ -14,17 +14,40 @@ body {
   gap: 1rem;
 }
 
-button {
-  padding: 0.4rem 1rem;
-  border: solid 1px black;
-  border-radius: 4px;
-  background-color: black;
-  color: white;
-  cursor: pointer;
+.navbar {
+  background-color: #fff;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  box-shadow: 0 0 4px black;
 
-  &:hover {
-    background-color: #222;
+  ul {
+    list-style: none;
+    display: flex;
+
+    li {
+      padding: 1rem 2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+
+      &:hover {
+        background-color: #eee;
+      }
+    }
   }
+}
+
+.section-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  /* margin-top: 1rem; */
 }
 
 .available-books,
@@ -34,9 +57,6 @@ button {
   grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
   grid-auto-rows: 1fr;
   gap: 1rem;
-}
-
-.borrowed-books {
   margin-bottom: 2rem;
 }
 
@@ -45,16 +65,48 @@ button {
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+
+  &:hover {
+    .btn-img {
+      opacity: 0.1;
+      filter: blur(2px);
+    }
+
+    .btn-borrow {
+      opacity: 1;
+      z-index: 99;
+    }
+  }
 
   figure {
     width: 15rem;
+    background-color: rgba(0, 0, 0, 0.9);
+    border-radius: 8px 0 0 8px;
+    position: relative;
 
     img {
       border-radius: 8px 0 0 8px;
       height: 100%;
-      max-width: 100%;
+      width: 100%;
       object-fit: cover;
       object-position: center;
+      transition: opacity 0.3s ease-out;
+    }
+
+    .btn-borrow {
+      color: white;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      opacity: 0;
+      transition: opacity 0.3s ease-out;
+      pointer-events: none;
+      font-weight: 600;
+      font-size: 1.4rem;
     }
   }
 
@@ -78,4 +130,8 @@ button {
       justify-content: flex-end;
     }
   }
+}
+
+.hidden {
+  display: none;
 }
