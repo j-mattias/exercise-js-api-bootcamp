@@ -1,5 +1,10 @@
-getBooks();
-enableNavigation();
+document.addEventListener("DOMContentLoaded", () => {
+  getBooks();
+  enableNavigation();
+  
+  // Display books based on local storage content (available books default landing page)
+  displayBooks("borrow", "availableBooks", document.querySelector(".available-books"));
+});
 
 async function getBooks() {
   try {
@@ -15,9 +20,6 @@ async function getBooks() {
     if (!isAvailableBooks || !isBorrowedBooks) {
       localStorage.setItem("availableBooks", JSON.stringify(data));
     }
-
-    // Display books based on local storage content (available books default landing page)
-    displayAvailableBooks();
   } catch (error) {
     console.log(error.message);
   }
@@ -52,75 +54,61 @@ function createCard(img, title, author, pages, genre, id, btnClass, btnText) {
   return templateCard;
 }
 
-function borrowBook() {
-  const availableBooks = JSON.parse(localStorage.getItem("availableBooks")) || [];
-  const borrowedBooks = JSON.parse(localStorage.getItem("borrowedBooks")) || [];
+function bookAction(action) {
+
+  let addList, removeList, storageKey, sectionSelector;
+
+  // If action is borrow, set removeList to be what's available, addList to what's borrowed and vice versa
+  if (action === "borrow") {
+    removeList = JSON.parse(localStorage.getItem("availableBooks")) || [];
+    addList = JSON.parse(localStorage.getItem("borrowedBooks")) || [];
+    storageKey = "availableBooks";
+    sectionSelector = document.querySelector(".available-books");
+  } else if (action === "return") {
+    addList = JSON.parse(localStorage.getItem("availableBooks")) || [];
+    removeList = JSON.parse(localStorage.getItem("borrowedBooks")) || [];
+    storageKey = "borrowedBooks";
+    sectionSelector = document.querySelector(".borrowed-books");
+}
 
   const cardRefs = document.querySelectorAll(".card");
 
   // Add functionality to each borrow button
   cardRefs.forEach((button) => {
     button.addEventListener("click", () => {
-      // If the books is available to be lended out
-      if (availableBooks.some((book) => String(book.isbn) === button.dataset.id)) {
+      // If the books is available to be lended / returned
+      if (removeList.some((book) => String(book.isbn) === button.dataset.id)) {
         // Find the book object in the array
-        const findBook = availableBooks.find((book) => String(book.isbn) === button.dataset.id);
+        const findBook = removeList.find((book) => String(book.isbn) === button.dataset.id);
 
-        // Get the index of the book, remove it from available, add it to borrowed
-        const bookIndex = availableBooks.indexOf(findBook);
-        availableBooks.splice(bookIndex, 1);
-        borrowedBooks.push(findBook);
+        // Get the index of the book, remove it from lended/returned and add to lended/returned
+        const bookIndex = removeList.indexOf(findBook);
+        removeList.splice(bookIndex, 1);
+        addList.push(findBook);
 
         // Update localStorage to reflect new status for available/borrowed
-        localStorage.setItem("availableBooks", JSON.stringify(availableBooks));
-        localStorage.setItem("borrowedBooks", JSON.stringify(borrowedBooks));
+        if (action === "borrow") {
+          localStorage.setItem("availableBooks", JSON.stringify(removeList));
+          localStorage.setItem("borrowedBooks", JSON.stringify(addList));
+        } else if (action === "return") {
+          localStorage.setItem("borrowedBooks", JSON.stringify(removeList));
+          localStorage.setItem("availableBooks", JSON.stringify(addList));
+        }
 
         // Display the new state for the books
-        displayAvailableBooks();
+        displayBooks(action, storageKey, sectionSelector);
       }
     });
   });
 }
 
-function returnBook() {
-  const availableBooks = JSON.parse(localStorage.getItem("availableBooks")) || [];
-  const borrowedBooks = JSON.parse(localStorage.getItem("borrowedBooks")) || [];
+function displayBooks(btnMsg, storageKey, sectionSelector) {
+  const books = JSON.parse(localStorage.getItem(storageKey)) || [];
 
-  const cardRefs = document.querySelectorAll(".card");
-
-  // Add functionality to each return button
-  cardRefs.forEach((button) => {
-    button.addEventListener("click", (e) => {
-      // If the books is available to be returned
-      if (borrowedBooks.some((book) => String(book.isbn) === button.dataset.id)) {
-        // Find the book object in the array
-        const findBook = borrowedBooks.find((book) => String(book.isbn) === button.dataset.id);
-
-        // Get the index of the book, remove it from borrowed, add it to available
-        const bookIndex = borrowedBooks.indexOf(findBook);
-        borrowedBooks.splice(bookIndex, 1);
-        availableBooks.push(findBook);
-
-        // Update localStorage to reflect new status for available/borrowed
-        localStorage.setItem("borrowedBooks", JSON.stringify(borrowedBooks));
-        localStorage.setItem("availableBooks", JSON.stringify(availableBooks));
-
-        // Display the new state for the books
-        displayBorrowedBooks();
-      }
-    });
-  });
-}
-
-function displayAvailableBooks() {
-  const availableBooks = JSON.parse(localStorage.getItem("availableBooks")) || [];
-
-  const availableBooksRef = document.querySelector(".available-books");
-
-  // Clear the innerHTML and update the list of available books based on localStorage
-  availableBooksRef.innerHTML = "";
-  availableBooks.forEach((book) => {
-    availableBooksRef.innerHTML += createCard(
+  // Clear the innerHTML and update the list of books based on localStorage
+  sectionSelector.innerHTML = "";
+  books.forEach((book) => {
+    sectionSelector.innerHTML += createCard(
       book.cover,
       book.title,
       book.author,
@@ -128,36 +116,12 @@ function displayAvailableBooks() {
       book.genre,
       book.isbn,
       "btn-borrow",
-      "Borrow"
+      `${btnMsg}`
     );
   });
 
   // Enable borrow and return functionality for respective buttons
-  borrowBook();
-}
-
-function displayBorrowedBooks() {
-  const borrowedBooks = JSON.parse(localStorage.getItem("borrowedBooks")) || [];
-
-  const borrowedBooksRef = document.querySelector(".borrowed-books");
-
-  // Clear the innerHTML and update the list of borrowed books based on localStorage
-  borrowedBooksRef.innerHTML = "";
-  borrowedBooks.forEach((book) => {
-    borrowedBooksRef.innerHTML += createCard(
-      book.cover,
-      book.title,
-      book.author,
-      book.pages,
-      book.genre,
-      book.isbn,
-      "btn-borrow",
-      "Return"
-    );
-  });
-
-  // Enable borrow and return functionality for respective buttons
-  returnBook();
+  bookAction(btnMsg);
 }
 
 function enableNavigation() {
@@ -173,13 +137,13 @@ function enableNavigation() {
       if (e.target.className === "borrow") {
         borrowRef.classList.add("hidden");
         availableRef.classList.remove("hidden");
-        displayAvailableBooks();
+        displayBooks("borrow", "availableBooks", document.querySelector(".available-books"));
 
       // If return nav item is clicked, show borrowed section and display borrowed books
       } else if (e.target.className === "return") {
         borrowRef.classList.remove("hidden");
         availableRef.classList.add("hidden");
-        displayBorrowedBooks();
+        displayBooks("return", "borrowedBooks", document.querySelector(".borrowed-books"));
       }
     });
   });

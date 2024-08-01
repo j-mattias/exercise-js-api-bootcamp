@@ -107,6 +107,7 @@ body {
       pointer-events: none;
       font-weight: 600;
       font-size: 1.4rem;
+      text-transform: capitalize;
     }
   }
 
